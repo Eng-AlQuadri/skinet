@@ -484,3 +484,4 @@ $RECYCLE.BIN/
 *.swp
 API/appsettings.json
 Client/src/environments/environment.ts
+Client/src/environments/environment.development.ts
