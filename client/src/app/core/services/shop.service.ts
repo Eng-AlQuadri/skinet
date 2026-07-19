@@ -4,7 +4,7 @@ import { Pagination } from '../../shared/models/pagination';
 import { Product } from '../../shared/models/product';
 import { Observable, Subscription } from 'rxjs';
 import { ShopParams } from '../../shared/models/shopParams';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'

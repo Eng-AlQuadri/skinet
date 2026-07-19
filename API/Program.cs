@@ -12,11 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<StoreContext>(options => 
+builder.Services.AddDbContext<StoreContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    var conString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    options.UseMySql(conString,
+    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")));
 });
 
 builder.Services.AddControllers();
@@ -44,6 +47,18 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddIdentityApiEndpoints<AppUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<StoreContext>();
@@ -54,12 +69,11 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials()
-    .WithOrigins("https://localhost:4200"));
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 
